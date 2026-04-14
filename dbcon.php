@@ -1,12 +1,13 @@
 <?php
-$server = "localhost"; 
-$username = "root";
-$password = "";  //macbook gebruikers vullen bij wachtwoord "root" in.
-$db = "escape-room"; //pas dit aan indien de naam van jullie database anders is
+$host   = 'localhost';
+$dbname = 'escape-room';
+$user   = 'root';
+$pass   = '';
 
 try {
-  $db_connection = new PDO("mysql:host=$server; dbname=$db", $username, $password);
-  $db_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    ]);
 } catch (PDOException $e) {
-  echo "Verbinding mislukt" . $e->getMessage();
+    die("Verbinding mislukt: " . $e->getMessage());
 }
