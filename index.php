@@ -10,15 +10,25 @@
 
 <body>
 
-  <h1>Welkom</h1>
-  <p>De button hieronder is alleen voor testdoeleinden bij het opstarten van het project. Deze pagina is bedoeld voor de
-    uitleg van jullie escape room.</p>
-  <p>Via deze pagina gaat een team naar de aanmeldpagina</p>
 
 
-  <button><a href="./rooms/room_1.php">Klik hier voor een demonstratie van kamer
-      1</a></button>
+
+
+
+  <img class= "imd" src="../pacific/img/Iron-Lung-DLC-View-Mode.webp" alt="php loading">
+   <div class = indexText>
+        <div class="indexTextBG"></div>
+<div class= "tekst1">
+<p>Diep onder het donkere <br> water word je wakker in een <br> oude, geroeste onderzeeër.
+<br><br>
+Het staal kraakt, water <br> sijpelt naar binnen en de <br> zuurstof raakt op. 
+<br><br>
+De bemanning is <br> verdwenen. Los de raadsels <br> op, herstel de systemen en <br> vind de nooduitgang… <br> voordat de zee je voorgoed <br> opslokt.</p>
+</div>
+</div>
+
+
+  <button class= "Btn1"><a href="./rooms/room_1.php">Klik hier voor een demonstratie van kamer 1</a></button>
 
 </body>
-
 </html>

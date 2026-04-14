@@ -21,6 +21,8 @@ try {
 
 <body>
 
+  <img class= 'imd2' src="../img/onderzeeër2.avif" alt="php.loading">
+
   <div class="container">
     <?php foreach ($riddles as $index => $riddle) : ?>
     <div class="box box<?php echo $index + 1; ?>" onclick="openModal(<?php echo $index; ?>)"

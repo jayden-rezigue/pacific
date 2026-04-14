@@ -2,6 +2,12 @@
 function openModal(index) {
   // Zoek het element met de class 'box' en het bijbehorende data-index
   let box = document.querySelector(`.box[data-index='${index}']`);
+  //stuurt je terug als je al een vraag hebt beantwoord
+  if (box.classList.contains('answered')) {
+    alert("Deze vraag heb je al goed beantwoord 🤦‍♂️");
+    return;
+  }
+  currentBox = box;
 
   // Haal de vraag en het juiste antwoord uit de dataset van de box
   let riddleText = box.dataset.riddle;
@@ -30,6 +36,9 @@ function closeModal() {
   // Maak de feedback tekst leeg
   document.getElementById('feedback').innerText = '';
 }
+let correctAnswers = 0; 
+const totalQuestions = 4;
+let currentBox = null;
 
 // Deze functie controleert of het ingevoerde antwoord correct is
 function checkAnswer() {
@@ -45,8 +54,14 @@ function checkAnswer() {
   // Vergelijk het antwoord van de gebruiker met het juiste antwoord (hoofdlettergevoeligheid negeren)
   if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
     // Als het antwoord juist is, geef positieve feedback
+    correctAnswers++;
     feedback.innerText = 'Correct! Goed gedaan!';
     feedback.style.color = 'green';
+
+    if (currentBox) {
+      currentBox.classList.add('answered');
+      currentBox.style.pointerEvents = 'none';
+    }
 
     // Sluit de modal na 1 seconde
     setTimeout(closeModal, 1000);
@@ -54,5 +69,39 @@ function checkAnswer() {
     // Als het antwoord fout is, geef negatieve feedback
     feedback.innerText = 'Fout, probeer opnieuw!';
     feedback.style.color = 'red';
+    setTimeout(death, 1500); // Sluit de modal na 1 seconde
+  }
+
+  if (correctAnswers === totalQuestions) {
+    document.getElementById('feedback').innerText = 'Je hebt alle vragen goed beantwoord!';
+    document.getElementById('feedback').style.color = 'green';
+    setTimeout(nextroom, 1000); // Wacht 1 seconde en ga dan naar de volgende kamer
+}}
+
+let timeLeft = 60; 
+    const timerElement = document.getElementById("timer_countdown");
+    const countdown = setInterval(function() {
+      timeLeft--;
+      timerElement.textContent = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        window.location.href = "verloren.php"; 
+      }
+    }, 1000);
+
+
+function nextroom(){
+  const currentPath = window.location.pathname;
+  if (currentPath.includes("room_1.php")) {
+    window.location.href = "room_2.php";
+  }
+  if (currentPath.includes("room_2.php")) {
+    window.location.href = "room_3.php";
+  }
+  if (currentPath.includes("room_3.php")) {
+    // window.location.href = "gewonnen.php";
   }
 }
+// function death(){
+//   const currentPath = window.location.pathname;
+//   window.location.href = "verloren.php";}

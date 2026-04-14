@@ -20,6 +20,8 @@ try {
 </head>
 
 <body>
+
+<img class= 'imd1' src="../img/onderzeeër1.jpg" alt="php.loading">
   <h1>Team: ...</h1>
 
   <div class="container">
