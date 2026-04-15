@@ -6,25 +6,26 @@ $melding = '';
 // ── Toevoegen ──
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actie'])) {
 
-    if ($_POST['actie'] === 'toevoegen') {
-        $stmt = $pdo->prepare("INSERT INTO riddles (riddle, antwoord, hint, moeilijkheid) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$_POST['riddle'], $_POST['antwoord'], $_POST['hint'], $_POST['moeilijkheid']]);
-        $melding = "✅ Raadsel toegevoegd!";
-    }
+// ── Toevoegen ──
+if ($_POST['actie'] === 'toevoegen') {
+    $stmt = $pdo->prepare("INSERT INTO riddles (riddle, answer, hint, roomId) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$_POST['riddle'], $_POST['answer'], $_POST['hint'], $_POST['roomId']]);
+    $melding = "Raadsel toegevoegd!";
+}
 
-    // ── Bewerken ──
-    if ($_POST['actie'] === 'bewerken') {
-        $stmt = $pdo->prepare("UPDATE riddles SET riddle=?, antwoord=?, hint=?, moeilijkheid=? WHERE id=?");
-        $stmt->execute([$_POST['riddle'], $_POST['antwoord'], $_POST['hint'], $_POST['moeilijkheid'], $_POST['id']]);
-        $melding = "✏️ Raadsel bijgewerkt!";
-    }
+// ── Bewerken ──
+if ($_POST['actie'] === 'bewerken') {
+    $stmt = $pdo->prepare("UPDATE riddles SET riddle=?, answer=?, hint=?, roomId=? WHERE id=?");
+    $stmt->execute([$_POST['riddle'], $_POST['answer'], $_POST['hint'], $_POST['roomId'], $_POST['id']]);
+    $melding = "Raadsel bijgewerkt!";
+}
 }
 
 // ── Verwijderen ──
 if (isset($_GET['verwijder'])) {
     $stmt = $pdo->prepare("DELETE FROM riddles WHERE id = ?");
     $stmt->execute([$_GET['verwijder']]);
-    $melding = "🗑️ Raadsel verwijderd!";
+    $melding = "Raadsel verwijderd!";
 }
 
 // ── Bewerk-formulier laden ──
@@ -64,11 +65,20 @@ $riddles = $pdo->query("SELECT * FROM riddles ORDER BY id DESC")->fetchAll(PDO::
         .makkelijk { background: #28a745; }
         .gemiddeld  { background: #ffc107; color: #333; }
         .moeilijk   { background: #dc3545; }
+            .terug {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #00cfff;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .terug:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
+     <a href="show_all_riddles.php" class="terug">← Terug naar Overzicht</a>
 
-<h1>🧩 Raadsels Beheren</h1>
+<h1>Raadsels Beheren</h1>
 
 <?php if ($melding): ?>
     <div class="melding"><?= htmlspecialchars($melding) ?></div>
@@ -76,64 +86,61 @@ $riddles = $pdo->query("SELECT * FROM riddles ORDER BY id DESC")->fetchAll(PDO::
 
 
 <!-- ── FORMULIER: Toevoegen of Bewerken ── -->
-<h2><?= $bewerkRaadsel ? '✏️ Raadsel bewerken' : '➕ Nieuw raadsel toevoegen' ?></h2>
+<h2><?= $bewerkRaadsel ? 'Raadsel bewerken' : 'Nieuw raadsel toevoegen' ?></h2>
 <form method="POST">
     <input type="hidden" name="actie" value="<?= $bewerkRaadsel ? 'bewerken' : 'toevoegen' ?>">
     <?php if ($bewerkRaadsel): ?>
         <input type="hidden" name="id" value="<?= $bewerkRaadsel['id'] ?>">
     <?php endif; ?>
 
-    <label>Vraag</label>
-    <textarea name="vraag" required><?= htmlspecialchars($bewerkRaadsel['vraag'] ?? '') ?></textarea>
+    <label>Riddle (vraag)</label>
+    <textarea name="riddle" required><?= htmlspecialchars($bewerkRaadsel['riddle'] ?? '') ?></textarea>
 
     <label>Antwoord</label>
-    <input type="text" name="antwoord" required value="<?= htmlspecialchars($bewerkRaadsel['antwoord'] ?? '') ?>">
+    <input type="text" name="answer" required value="<?= htmlspecialchars($bewerkRaadsel['answer'] ?? '') ?>">
 
     <label>Hint (optioneel)</label>
     <input type="text" name="hint" value="<?= htmlspecialchars($bewerkRaadsel['hint'] ?? '') ?>">
 
-    <label>Moeilijkheid</label>
-    <select name="moeilijkheid">
-        <?php foreach (['makkelijk', 'gemiddeld', 'moeilijk'] as $niveau): ?>
-            <option value="<?= $niveau ?>" <?= ($bewerkRaadsel['moeilijkheid'] ?? '') === $niveau ? 'selected' : '' ?>>
-                <?= ucfirst($niveau) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
+    <label>Room ID</label>
+    <input type="number" name="roomId" required value="<?= htmlspecialchars($bewerkRaadsel['roomId'] ?? '') ?>">
 
-    <button type="submit"><?= $bewerkRaadsel ? '💾 Opslaan' : '➕ Toevoegen' ?></button>
+    <button type="submit"><?= $bewerkRaadsel ? ' Opslaan' : ' Toevoegen' ?></button>
     <?php if ($bewerkRaadsel): ?>
-        <a href="admin.php" style="margin-left:10px; color:#666;">Annuleren</a>
+        <a href="add_riddle.php" style="margin-left:10px; color:#666;">Annuleren</a>
     <?php endif; ?>
 </form>
 
 
 <!-- ── TABEL: Alle raadsels ── -->
-<h2>📋 Alle riddles (<?= count($riddles) ?>)</h2>
+<h2> Alle riddles (<?= count($riddles) ?>)</h2>
 <table>
     <tr>
         <th>#</th>
-        <th>Vraag</th>
+        <th>Riddle</th>
         <th>Antwoord</th>
         <th>Hint</th>
-        <th>Niveau</th>
+        <th>Room</th>
         <th>Acties</th>
     </tr>
-<?php foreach ($riddles as $r): ?>
-<tr>
-    <td><?= $r['id'] ?></td>
-    <td><?= htmlspecialchars($r['riddle']) ?></td>      <!-- was: vraag -->
-    <td><?= htmlspecialchars($r['answer']) ?></td>      <!-- was: antwoord -->
-    <td><?= htmlspecialchars($r['hint'] ?? '–') ?></td>
-    <td><?= $r['roomId'] ?></td>                        <!-- bonus: roomId tonen -->
-    <td>
-        <a href="?bewerk=<?= $r['id'] ?>" class="btn-bewerk">✏️ Bewerk</a>
-        <a href="?verwijder=<?= $r['id'] ?>" class="btn-verwijder"
-           onclick="return confirm('Zeker weten?')">🗑️ Verwijder</a>
-    </td>
-</tr>
-<?php endforeach; ?>
+    <?php foreach ($riddles as $r): ?>
+    <tr>
+        <td><?= $r['id'] ?></td>
+        <td><?= htmlspecialchars($r['riddle']) ?></td>
+        <td><?= htmlspecialchars($r['answer']) ?></td>
+        <td><?= htmlspecialchars($r['hint'] ?? '–') ?></td>
+        <td><?= $r['roomId'] ?></td>
+        <td>
+            <a href="?bewerk=<?= $r['id'] ?>" class="btn-bewerk"> Bewerk</a>
+            <br>
+            <a href="?verwijder=<?= $r['id'] ?>" class="btn-verwijder"
+               onclick="return confirm('Zeker weten?')"> Verwijder</a>
+        </td>
+    </tr>
+    <?php endforeach; ?>
 </table>
+
+
 
 </body>
 </html>
